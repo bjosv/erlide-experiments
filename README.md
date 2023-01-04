@@ -24,6 +24,8 @@ sudo update-alternatives --config java
 
 Set path:
 export JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64"
+
+Maven is the used build tool, see `~/.m2` for cached packages.
 ```
 
 ### Eclipse 4.9+
@@ -33,6 +35,10 @@ or
 sudo snap install --classic eclipse
 ```
 gives ~ Eclipse 2022-12 (4.26)
+
+Installed plugins can be located at:
+`~/snap/eclipse/66/amd64`
+
 
 ### Ruby
 Needed by erlide_eclipse
@@ -55,8 +61,6 @@ restart shell
 ## Install
 
 ### Install erlide
-Current version: 0.60.4.v20210610-1117
-Includes:        org.erlide.kernel.feature_0.115.3.201806041948.jar
 
 Eclipse menu: Help -> Install New Software...
 Install dialog:
@@ -64,6 +68,10 @@ Install dialog:
 - Select only `Erlide IDE`
 - Go to Window -> Preferences -> Erlang -> Installed runtimes and add an entry
 
+```
+Current version: 0.60.4.v20210610-1117
+Includes:        org.erlide.kernel.feature_0.115.3.201806041948.jar
+```
 
 ## Details
 
@@ -78,22 +86,60 @@ Install dialog:
 
 
 #### Build
+```
 ./build
 ./build test
 cd eclipse
 ./build
+```
+
+The build result is found at:
+`eclipse/org.erlide.kernel.site-<VERSION>.zip`
+
+which can be unzipped to the update site:
+
+`update/kernel/<VERSION>/`
+
+Like `update/kernel/0.115.5/`
 
 
 ### erlide_eclipse
 
 #### Build
 
+> Use OTP23/24 if testing older erlide versions
+
 ```
+> Build via makefile
+make build
+
+> Deploy via makefile
+make deploy
+
 > From Jenkinsfile
 ./mvnw -B -U clean verify -P help,build-product -Dmaven.test.failure.ignore=true
+
 > From Github Actions
 ./mvnw -B -U clean verify -P help
+
+> Build without running tests (~49s)
+./mvnw -B -U clean -P help
+
+> Build with full logs: -X
 ```
+
+#### jinterface
+
+Not using OTPs lib/jinterface/priv/OtpErlang.jar
+
+Update:
+- Copy source:
+  cp ~/.kerl/builds/25.2/otp_src_25.2/lib/jinterface/java_src/com/ericsson/otp/erlang/* libs/com.ericsson.otp.jinterface/src/com/ericsson/otp/erlang/
+- Update version, Use version from:
+  ~/.kerl/builds/25.2/otp_src_25.2/lib/jinterface/vsn.mk:JINTERFACE_VSN = 1.13.1
+- Update version in files:
+  libs/com.ericsson.otp.jinterface/pom.xml
+  libs/com.ericsson.otp.jinterface/META-INF/MANIFEST.MF
 
 #### Interesting commits
 update kernel to 0.115.3
@@ -113,4 +159,6 @@ v0.55.0 (which includes change to 0.115.3)
   erlide_eclipse/.ruby-version
 - Ruby issue
   "Gemfile:5: warning: calling URI.open via Kernel#open is deprecated, call URI.open directly or use URI#open"
+- Upstream warning fixes to Erlang JInterface
+- Update kernel version banner on https://erlide.org/ (via metafile?)
 
