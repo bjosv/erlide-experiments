@@ -30,6 +30,8 @@ Maven is the used build tool, see `~/.m2` for cached packages.
 
 ### Eclipse 4.9+
 https://www.eclipse.org/downloads/packages/installer
+
+https://wiki.eclipse.org/Eclipse/Installation/
 or
 ```
 sudo snap install --classic eclipse
@@ -39,6 +41,8 @@ gives ~ Eclipse 2022-12 (4.26)
 Installed plugins can be located at:
 `~/snap/eclipse/66/amd64`
 
+Start with extra logs
+`eclipse -debug -consoleLog`
 
 ### Ruby
 Needed by erlide_eclipse
@@ -113,8 +117,12 @@ Like `update/kernel/0.115.5/`
 > Build via makefile
 make build
 
-> Deploy via makefile
-make deploy
+> Build and ignore test failures
+./mvnw -B -U enforcer:display-info clean verify -Phelp --fail-at-end
+./mvnw -B -U enforcer:display-info clean verify -Phelp -Dmaven.test.failure.ignore=true --fail-at-end
+
+> Deploy/Publish via makefile
+make publish
 
 > From Jenkinsfile
 ./mvnw -B -U clean verify -P help,build-product -Dmaven.test.failure.ignore=true
@@ -126,6 +134,27 @@ make deploy
 ./mvnw -B -U clean -P help
 
 > Build with full logs: -X
+```
+
+#### Pre-release
+```
+> Set version manually using:
+git grep -l '0.61.1' | xargs sed -i 's/0.61.1/0.62.0/g'
+
+> Build erlide_eclipse
+make build
+
+> Copy result to the update site:
+cd erlide.github.io/update/prerelease/
+cp ../../../erlide_eclipse/releng/org.erlide.site/target/org.erlide-*.zip .
+
+
+> Replace files
+git rm -r features/ plugins/
+unzip org.erlide-*.zip
+> Replace all [A]
+rm org.erlide-*.zip
+git add .
 ```
 
 #### jinterface
