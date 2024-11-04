@@ -157,6 +157,20 @@ rm org.erlide-*.zip
 git add .
 ```
 
+#### Publish release (after updating version manually)
+```
+> Push changes and tag to upstream/origin
+> then run:
+make publish
+```
+TODO: Investigate https://wiki.eclipse.org/Tycho/Reproducible_Version_Qualifiers
+"version qualifiers are generated from the last of the timestamp of the most recent commit that touches any file under feature project basedir and timestamps of directly included bundles and features."
+
+#### Publish docs
+```
+make publish-docs
+```
+
 #### jinterface
 
 Not using OTPs lib/jinterface/priv/OtpErlang.jar
